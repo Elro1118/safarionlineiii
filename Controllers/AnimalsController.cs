@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using safarionlineiii.Modal;
 
+
 namespace safarionlineiii.Controllers
 {
+
   [Route("api/[controller]")]
   [ApiController]
 
@@ -26,20 +28,13 @@ namespace safarionlineiii.Controllers
       var result = db.SeenAnimals.OrderBy(o => o.Species).ToList();
       return result;
     }
-    [HttpGet("{species}")]
-    public ActionResult<IEnumerable<SeenAnimals>> GetOneAnimal(string species)
-    {
 
-      var result = db.SeenAnimals.Where(w => w.Species == species).ToList();
+    [HttpGet("{location}")]
+    public ActionResult<IEnumerable<SeenAnimals>> GetAnimalsForLocation(string location)
+    {
+      var result = db.SeenAnimals.Where(w => w.LocationOfLastSeen == location).ToList();
       return result;
     }
-
-    // [HttpGet("{location}")]
-    // public ActionResult<IEnumerable<SeenAnimals>> GetAnimalsForLocation(string location)
-    // {
-    //   var result = db.SeenAnimals.Where(w => w.LocationOfLastSeen == location).ToList();
-    //   return result;
-    // }
 
     [HttpPost]
     public ActionResult<SeenAnimals> AddAnimal([FromBody] SeenAnimals animalToAdd)
@@ -50,7 +45,18 @@ namespace safarionlineiii.Controllers
       return animalToAdd;
     }
 
-
+    [HttpPut("{id}")]
+    public ActionResult<IEnumerable<SeenAnimals>> UpdateAnimal(int id)
+    {
+      var sawAnimal = db.SeenAnimals.Where(w => w.Id == id).ToList();
+      foreach (var item in sawAnimal)
+      {
+        item.CountOfTimesSeen += 1;
+      }
+      db.SaveChanges();
+      sawAnimal = db.SeenAnimals.Where(w => w.Id == id).ToList();
+      return sawAnimal;
+    }
 
 
   }
