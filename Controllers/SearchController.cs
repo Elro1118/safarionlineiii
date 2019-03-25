@@ -11,13 +11,18 @@ namespace safarionlineiii.Controllers
   [ApiController]
   public class SearchController : ControllerBase
   {
-    // We wanna do a GET to /api/search?query=Lions
-    [HttpGet]
-    public ActionResult<string> GetAllAnimals([FromQuery] string query)
+    private DatabaseContext db;
+    public SearchController()
     {
-      return query;
+      this.db = new DatabaseContext();
     }
 
-
+    // We wanna do a GET to /api/search?query=Lions
+    [HttpGet]
+    public ActionResult<IEnumerable<SeenAnimals>> GetAllAnimals([FromQuery] string specie, string specie2, string specie3)
+    {
+      var result = db.SeenAnimals.Where(w => w.Species == specie || w.Species == specie2 || w.Species == specie3).ToList();
+      return result;
+    }
   }
 }

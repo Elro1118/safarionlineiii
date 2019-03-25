@@ -36,14 +36,37 @@ namespace safarionlineiii.Controllers
       return result;
     }
 
+    [HttpGet("TotalSeenAnimals")]
+    public ActionResult<int> GetTotalSeenAnimals()
+    {
+      var result = db.SeenAnimals.Sum(s => s.CountOfTimesSeen);
+      return result;
+    }
+
+    [HttpGet("Places")]
+    public ActionResult<List<string>> GetAllPlace()
+    {
+      var result = db.SeenAnimals.Select(s => s.LocationOfLastSeen).Distinct().ToList();
+      return result;
+    }
+
+    [HttpGet("ThreeAnimalsTotal")]
+    public ActionResult<int> GetThreeAnimalsTotal([FromQuery] string specie, string specie2, string specie3)
+    {
+      var animalsTotal = db.SeenAnimals.Where(w => w.Species == specie || w.Species == specie2 || w.Species == specie3);
+      var result = animalsTotal.Sum(s => s.CountOfTimesSeen);
+      return result;
+    }
+
+
     [HttpPost]
     public ActionResult<SeenAnimals> AddAnimal([FromBody] SeenAnimals animalToAdd)
     {
-
       db.SeenAnimals.Add(animalToAdd);
       db.SaveChanges();
       return animalToAdd;
     }
+
 
     [HttpPut("{id}")]
     public ActionResult<IEnumerable<SeenAnimals>> UpdateAnimal(int id)
@@ -56,6 +79,24 @@ namespace safarionlineiii.Controllers
       db.SaveChanges();
       sawAnimal = db.SeenAnimals.Where(w => w.Id == id).ToList();
       return sawAnimal;
+    }
+
+    [HttpDelete("{id}")]
+    public ActionResult DeleteAnimalId(int id)
+    {
+      var animal = db.SeenAnimals.FirstOrDefault(f => f.Id == id);
+      db.SeenAnimals.Remove(animal);
+      db.SaveChanges();
+      return Ok();
+    }
+
+    [HttpDelete("location={location}")]
+    public ActionResult DeleteAnimalLocation(string location)
+    {
+      var animal = db.SeenAnimals.Where(w => w.LocationOfLastSeen == location);
+      db.SeenAnimals.RemoveRange(animal);
+      db.SaveChanges();
+      return Ok();
     }
 
 
